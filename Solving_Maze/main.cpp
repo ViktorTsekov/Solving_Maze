@@ -1,12 +1,17 @@
 #include <iostream>
 #include <vector>
+#include <windows.h>
 #include <string>
 
 #include "Point.h"
 
 using namespace std;
 
-char maze[5][6] = {{'X', 'O', 'X', 'X', 'X', 'X'}, {'X', 'O', 'X', 'O', 'O', 'X'}, {'X', 'O', 'X', 'O', 'X', 'X'}, {'X', 'O', 'O', 'O', 'S', 'X'}, {'X', 'X', 'X', 'X', 'X', 'X'}};
+char maze[5][6] = {{'X', 'O', 'X', 'X', 'X', 'X'}, 
+				   {'X', 'O', 'X', 'O', 'O', 'X'}, 
+				   {'X', 'O', 'X', 'O', 'X', 'X'}, 
+				   {'X', 'O', 'O', 'O', 'S', 'X'}, 
+				   {'X', 'X', 'X', 'X', 'X', 'X'}};
 bool** booleanGrid;
 
 int startX;
@@ -75,7 +80,7 @@ void convertMazeToBooleanGrid() {
 }
 
 void BFS() {
-	
+
 	while(true) {
 		Point cur = visitedNodes[visitedNodes.size() - 1];
 		int x = cur.x;
@@ -86,51 +91,85 @@ void BFS() {
         }
 		
 		//Right
-		if(booleanGrid[x][y + 1] != true) {
+		if(booleanGrid[x][y + 1] == true) {
             visitedNodes.push_back(Point(x, y + 1));
             path.push_back("right");
-            booleanGrid[x][y + 1] = true;
+            booleanGrid[x][y + 1] = false;
         } 
 		//Down
-        else if(booleanGrid[x + 1][y] != true) {
+        else if(booleanGrid[x + 1][y] == true) {
             visitedNodes.push_back(Point(x + 1, y));
             path.push_back("down");
-            booleanGrid[x + 1][y] = true;
+            booleanGrid[x + 1][y] = false;
         }
 		//Left
-        else if(booleanGrid[x][y - 1] != true) {
+        else if(booleanGrid[x][y - 1] == true) {
             visitedNodes.push_back(Point(x, y - 1));
             path.push_back("left");
-            booleanGrid[x][y - 1] = true;
+            booleanGrid[x][y - 1] = false;
         }  
 		//Up
-		else if(booleanGrid[x - 1][y] != true) {
+		else if(booleanGrid[x - 1][y] == true) {
             visitedNodes.push_back(Point(x - 1, y));
             path.push_back("up");
-            booleanGrid[x - 1][y] = true;
+            booleanGrid[x - 1][y] = false;
         } 
         //Dead end
         else {
             visitedNodes.pop_back();
             path.pop_back();
         }
-		
+			
 	}
 	
 }
 
-int main() {
-	//printStartScreen();
-	//Start(30, mode);
-	//Update();
-
-	findStartCoordinates();
-	convertMazeToBooleanGrid();
-	print();
-	BFS();
+void moveStart(string direction) {
 	
-	for (int i = 0; i < path.size(); i++) {
-		cout << path[i] << endl;
+	if(direction == "right") {
+		maze[startX][startY] = 'O';
+		startY += 1;
+		maze[startX][startY] = 'S';
+	} else if(direction == "down") {
+		maze[startX][startY] = 'O';
+		startX += 1;
+		maze[startX][startY] = 'S';
+	} else if(direction == "left") {
+		maze[startX][startY] = 'O';
+		startY -= 1;
+		maze[startX][startY] = 'S';
+	} else if(direction == "up") {
+		maze[startX][startY] = 'O';
+		startX -= 1;
+		maze[startX][startY] = 'S';
 	}
 	
+}
+
+void printStartScreen() {
+	print();
+	cout << "Finding path in 3...";
+	Sleep(1000);
+	cout << "2...";
+	Sleep(1000);
+	cout << "1...";
+	Sleep(1000);
+	system("cls");	
+}
+
+int main() {
+	printStartScreen();
+	findStartCoordinates();
+	convertMazeToBooleanGrid();
+	BFS();
+	
+
+	for(int i = 0; i <= path.size(); i++) {
+		print();
+		moveStart(path[i]);	
+			
+		Sleep(500);
+		system("cls");	
+	}
+
 }
